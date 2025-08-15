@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wanderlust Chronicles - A World of Wonders</title>
+    <!-- Tailwind CSS for a modern, responsive layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Lora for elegant typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            /* UPDATED: New transparent blue background with a light dot pattern */
+            background-color: #eff6ff; /* blue-50 */
+            background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2393c5fd' fill-opacity='0.4'%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Lora', serif;
+        }
+        /* Style for cards and interactive elements */
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        /* Hero Video Background */
+        #hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            transform: translateX(-50%) translateY(-50%);
+            background-size: cover;
+        }
+        .hero-overlay {
+            background: rgba(0, 0, 0, 0.5);
+        }
+        /* Interactive Map Styles */
+        #map-container {
+            position: relative;
+            max-width: 600px;
+            height: 500px;
+            margin: auto;
+            background-color: #f8fafc; /* Overriding body bg for clarity */
+            border-radius: 2rem;
+            border: 2px solid #e2e8f0;
+        }
+        .map-marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ef4444; /* red-500 */
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .map-marker:hover {
+            transform: scale(1.6);
+            background-color: #dc2626; /* red-600 */
+        }
+        .map-marker .tooltip {
+            visibility: hidden;
+            width: 160px;
+            background-color: #1f2937; /* gray-800 */
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 150%;
+            left: 50%;
+            margin-left: -80px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            overflow: hidden;
+        }
+        .map-marker:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .tooltip img {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+        }
+        .tooltip .tooltip-text {
+            padding: 8px;
+            font-weight: bold;
+        }
+        /* Lightbox for Gallery */
+        #lightbox {
+            background-color: rgba(0, 0, 0, 0.9);
+            transition: opacity 0.3s ease-in-out;
+        }
+        #lightbox img {
+            max-width: 90vw;
+            max-height: 85vh;
+            animation: zoomIn 0.3s ease-in-out;
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.8); }
+            to { transform: scale(1); }
+        }
+        /* Scroll Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Special section style */
+        .special-section {
+            background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header & Navigation -->
+    <header id="header" class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-md">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-gray-800 tracking-wider">Wanderlust Chronicles</a>
+            <div class="hidden md:flex space-x-8 font-medium">
+                <a href="#special-blessing" class="text-gray-600 hover:text-red-500 transition-colors">Blessings</a>
+                <a href="#map" class="text-gray-600 hover:text-red-500 transition-colors">Map</a>
+                <a href="#destinations" class="text-gray-600 hover:text-red-500 transition-colors">Destinations</a>
+                <a href="#rafting" class="text-gray-600 hover:text-red-500 transition-colors">Adventure</a>
+                <a href="#contact" class="text-gray-600 hover:text-red-500 transition-colors">Contact</a>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-btn" class="text-gray-800 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 bg-white shadow-inner">
+            <a href="#special-blessing" class="block py-2 text-gray-600 hover:text-red-500">Blessings</a>
+            <a href="#map" class="block py-2 text-gray-600 hover:text-red-500">Map</a>
+            <a href="#destinations" class="block py-2 text-gray-600 hover:text-red-500">Destinations</a>
+            <a href="#rafting" class="block py-2 text-gray-600 hover:text-red-500">Adventure</a>
+            <a href="#contact" class="block py-2 text-gray-600 hover:text-red-500">Contact</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section with Video Background -->
+        <section class="relative h-screen flex items-center justify-center text-white overflow-hidden">
+            <video autoplay loop muted playsinline id="hero-video">
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-people-at-the-taj-mahal-301-large.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="absolute inset-0 hero-overlay"></div>
+            <div class="relative text-center p-4 z-10">
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight">A World of Wonders Awaits</h1>
+                <p class="mt-4 text-lg md:text-xl max-w-3xl">From sacred sites to thrilling adventures, discover the soul of incredible destinations.</p>
+            </div>
+        </section>
+
+        <!-- Ma Nanda Devi Special Section -->
+        <section id="special-blessing" class="py-20 special-section">
+            <div class="container mx-auto px-6 text-center reveal">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">A Divine Blessing: Ma Nanda Devi</h2>
+                <div class="max-w-xs mx-auto mb-8 card rounded-full shadow-2xl overflow-hidden p-2 bg-white">
+                    <img src="https://pbs.twimg.com/media/Gyae7D9XEAAFg9s?format=jpg&name=large" alt="Kuldevi Ma Nanda" class="w-full h-auto rounded-full">
+                </div>
+                <div class="max-w-3xl mx-auto">
+                    <p class="text-xl text-gray-700 italic leading-relaxed">
+                        "In every journey, I carry the divine grace of my Kuldevi, Ma Nanda. She is the light that guides my path, the strength in my heart, and the silent protector of my family. Her blessings are the true source of my courage to explore, to learn, and to embrace the wonders of this world."
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Map Section -->
+        <section id="map" class="py-20">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl font-bold mb-4">An Interactive Journey</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto mb-12">Hover over a marker to get a sneak peek, then click to explore the destination in detail.</p>
+                <div id="map-container" class="reveal">
+                    <!-- Markers with Image Tooltips -->
+                    <div data-target="khatushyam" class="map-marker" style="top: 33%; left: 38%;"><div class="tooltip"><img src="https://pbs.twimg.com/media/Gyae_aiWAAAGxxc?format=jpg&name=small" alt="Khatu Shyam Preview"><div class="tooltip-text">Khatu Shyam</div></div></div>
+                    <div data-target="haridwar" class="map-marker" style="top: 22%; left: 46%;"><div class="tooltip"><img src="https://pbs.twimg.com/media/Gyab7yHXgAAehZI?format=png&name=small" alt="Haridwar Preview"><div class="tooltip-text">Haridwar</div></div></div>
+                    <div data-target="rishikesh" class="map-marker" style="top: 21%; left: 45%;"><div class="tooltip"><img src="https://cdn.dorik.com/6678eaecca55530011b62363/images/PXL_20230428_054707146-M9a9y.jpg" alt="Rishikesh Preview"><div class="tooltip-text">Rishikesh</div></div></div>
+                    <div data-target="vrindavan" class="map-marker" style="top: 32%; left: 44%;"><div class="tooltip"><img src="https://cdn.dorik.com/6678eaecca55530011b62363/images/WhatsApp-Image-2024-06-24-at-11.02.01-AM-LbXp6.jpeg" alt="Vrindavan Preview"><div class="tooltip-text">Vrindavan</div></div></div>
+                    <div data-target="tajmahal" class="map-marker" style="top: 33%; left: 46%;"><div class="tooltip"><img src="https://cdn.dorik.com/6678eaecca55530011b62363/images/WhatsApp-Image-2024-06-24-at-11.02.06-AM-(1)-BZqkH.jpeg" alt="Taj Mahal Preview"><div class="tooltip-text">Taj Mahal</div></div></div>
+                    <div data-target="rajasthan" class="map-marker" style="top: 35%; left: 32%;"><div class="tooltip"><img src="https://cdn.dorik.com/6678eaecca55530011b62363/images/WhatsApp-Image-2024-06-24-at-11.02.08-AM-waqMx.jpeg" alt="Rajasthan Preview"><div class="tooltip-text">Rajasthan</div></div></div>
+                    <div data-target="chitrakoot" class="map-marker" style="top: 42%; left: 55%;"><div class="tooltip"><img src="https://cdn.dorik.com/6678eaecca55530011b62363/images/images-852bf.jpg" alt="Chitrakoot Preview"><div class="tooltip-text">Chitrakoot</div></div></div>
+                </div>
+            </div>
+        </section>
+        
+        <div id="destinations">
+        <!-- Khatu Shyam Section -->
+        <section id="khatushyam" class="py-20 bg-white">
+            <div class="container mx-auto px-6 reveal">
+                <div class="text-center">
+                    <h2 class="text-4xl font-bold mb-12">Khatu Shyam Temple: The Legend of the Great Donor</h2>
+                </div>
+                <div class="flex flex-col md:flex-row items-center gap-8">
+                    <div class="md:w-1/2">
+                        <img src="https://pbs.twimg.com/media/Gyae_aiWAAAGxxc?format=jpg&name=large" alt="Khatu Shyam Temple" class="w-full h-auto object-cover rounded-2xl shadow-lg card">
+                    </div>
+                    <div class="md:w-1/2">
+                        <h3 class="text-3xl font-bold mb-4">A Tale of Sacrifice</h3>
+                        <p class="text-lg text-gray-700 leading-relaxed mb-4">The temple honors Barbarika, a powerful warrior from the Mahabharata era. He was blessed with three infallible arrows but vowed to support the weaker side in the great war. To prevent him from altering the war's outcome, Lord Krishna, disguised as a Brahmin, asked for his head in charity.</p>
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li><strong>The Great Sacrifice:</strong> Barbarika willingly sacrificed his head, earning Krishna's blessing to be worshipped in the Kali Yuga as Shyam.</li>
+                            <li><strong>The Divine Head (Sheesh):</strong> The temple's main deity is the sacred head of Barbarika, discovered buried in the village of Khatu.</li>
+                            <li><strong>A Beacon of Hope:</strong> Today, millions of devotees visit the temple, believing that Shyam Baba fulfills the wishes of the faithful, earning him the name "Hare Ka Sahara" (Supporter of the Defeated).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vrindavan Section -->
+        <section id="vrindavan" class="py-20">
+            <div class="container mx-auto px-6 reveal">
+                <h2 class="text-4xl font-bold text-center mb-12">Vrindavan: The Divine Abode</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-center">
+                    <div class="card p-6 bg-white rounded-2xl shadow-lg">
+                        <img src="https://cdn.dorik.com/6678eaecca55530011b62363/images/WhatsApp-Image-2024-06-24-at-11.02.01-AM-LbXp6.jpeg" alt="Vrindavan Temple" class="w-full h-56 object-cover rounded-xl mb-4">
+                        <h4 class="font-bold text-xl mb-2">Heart of Devotion</h4>
+                        <p class="text-gray-600">Vrindavan is intrinsically linked to Lord Krishna's life. Key sites like the Banke Bihari Temple and the grand ISKCON temple draw millions of devotees annually.</p>
+                    </div>
+                    <div class="lg:col-span-2 card p-6 bg-white rounded-2xl shadow-lg">
+                        <h3 class="text-2xl font-bold mb-4">Prem Mandir & Sacred Ghats</h3>
+                        <p class="text-gray-600 mb-4">Prem Mandir is a modern marvel, dazzling visitors with its intricate carvings and spectacular evening light shows. Along the sacred Yamuna River, Keshi Ghat remains a vital center for ritual bathing and mesmerizing Aarti ceremonies.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <img src="https://cdn.dorik.com/6678eaecca55530011b62363/images/WhatsApp-Image-2024-06-24-at-11.02.01-AM-(1)-OXcML.jpeg" alt="Prem Mandir" class="w-full h-48 object-cover rounded-xl">
+                            <img src="https://cdn.dorik.com/6678eaecca55530011b62363/images/WhatsApp-Image-2024-06-24-at-11.02.00-AM-G3i-J.jpeg" alt="Yamuna River Ghat" class="w-full h-48 object-cover rounded-xl">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Taj Mahal Section -->
+        <section id="tajmahal" class="py-20 bg-white">
+            <div class="container mx-auto px-6 reveal">
+                <h2 class="text-4xl font-bold text-center mb-12">The Taj Mahal: A Symbol of Love</h2>
+                <div class="flex flex-col md:flex-row-reverse items-center gap-8">
+                    <div class="md:w-1/2">
+                        <img src="https://cdn.dorik.com/6678eaecca55530011b62363/images/WhatsApp-Image-2024-06-24-at-11.02.06-AM-(1)-BZqkH.jpeg" alt="The Taj Mahal" class="w-full h-auto object-cover rounded-2xl shadow-lg card">
+                    </div>
+                    <div class="md:w-1/2">
+                        <h3 class="text-3xl font-bold mb-4">An Emperor's Promise</h3>
+                        <p class="text-lg text-gray-700 leading-relaxed mb-4">The Taj Mahal is more than a building; it's a poem in marble. Commissioned by Emperor Shah Jahan for his wife Mumtaz Mahal, its perfect symmetry and intricate carvings make it an enduring symbol of devotion.</p>
+                        <p class="text-gray-600">The mausoleum's exquisite inlay work features 28 types of semi-precious stones. For the best experience, visit at sunrise when the marble glows with a soft, ethereal light.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rajasthan Section -->
+        <section id="rajasthan" class="py-20">
+            <div class="container mx-auto px-6 reveal">
+                <h2 class="text-4xl font-bold text-center mb-12">Rajasthan: The Land of Kings</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="card bg-white rounded-2xl shadow-lg p-6">
+                        <img src="https://cdn.dorik.com/6678eaecca55530011b62363/images/WhatsApp-Image-2024-06-24-at-11.02.08-AM-waqMx.jpeg" alt="Chittorgarh Fort" class="w-full h-64 object-cover rounded-xl mb-4">
+                        <h3 class="text-2xl font-bold mb-2">Chittorgarh Fort</h3>
+                        <p class="text-gray-600">A sprawling UNESCO site, Chittorgarh is a symbol of Rajput valor. It houses historical structures like the Vijay Stambh (Victory Tower) and Padmini's Palace, embodying the heroic spirit of its past.</p>
+                    </div>
+                    <div class="card bg-white rounded-2xl shadow-lg p-6">
+                        <img src="https://cdn.dorik.com/6678eaecca55530011b62363/images/Gaumukh-River-Chittorgarh-Fort-1024x639-nf9i6.jpg" alt="Rajasthan Heritage" class="w-full h-64 object-cover rounded-xl mb-4">
+                        <h3 class="text-2xl font-bold mb-2">Vibrant Culture & Heritage</h3>
+                        <p class="text-gray-600">Rajasthan's culture is a vibrant tapestry of traditions, with colorful festivals and folk dances like Ghoomar. The state is renowned for exquisite handicrafts and flavorful cuisine.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rishikesh Section -->
+        <section id="rishikesh" class="py-20 bg-white">
+            <div class="container mx-auto px-6 reveal">
+                <h2 class="text-4xl font-bold text-center mb-12">Rishikesh: The Spiritual Gateway</h2>
+                 <div class="flex flex-col md:flex-row items-center gap-8">
+                    <div class="md:w-1/2">
+                        <img src="https://cdn.dorik.com/6678eaecca55530011b62363/images/PXL_20230428_054707146-M9a9y.jpg" alt="Rishikesh by the Ganges" class="w-full h-auto object-cover rounded-2xl shadow-lg card">
+                    </div>
+                    <div class="md:w-1/2">
+                        <h3 class="text-3xl font-bold mb-4">Yoga, Spirit, and Adventure</h3>
+                        <p class="text-lg text-gray-700 leading-relaxed mb-4">Known as the "Yoga Capital of the World," Rishikesh offers a tranquil environment for inner reflection. It gained global fame after The Beatles visited in 1968.</p>
+                        <p class="text-gray-600">Beyond its ashrams, Rishikesh is an adventure hub. The iconic Laxman Jhula bridge sways over the Ganges, where thrill-seekers come for white-water rafting and bungee jumping.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Haridwar Section -->
+        <section id="haridwar" class="py-20">
+            <div class="container mx-auto px-6 reveal">
+                <div class="text-center">
+                    <h2 class="text-4xl font-bold mb-12">Har Ki Pauri, Haridwar: Footsteps of the Gods</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                    <img src="https://pbs.twimg.com/media/Gyab7yHXgAAehZI?format=png&name=large" alt="Ganga Aarti at Har Ki Pauri" class="w-full h-auto object-cover rounded-2xl shadow-lg card">
+                    <img src="https://pbs.twimg.com/media/Gyabs3eWcAAZacY?format=jpg&name=large" alt="Devotees at Har Ki Pauri" class="w-full h-auto object-cover rounded-2xl shadow-lg card">
+                </div>
+                <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg card">
+                    <h3 class="text-3xl font-bold mb-4">A Sacred Ghat</h3>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">Har Ki Pauri, literally "Footsteps of the Lord," is one of the most sacred ghats on the Ganges. It is believed to be the precise spot where the divine nectar (Amrit) fell during a celestial battle.</p>
+                    <p class="text-gray-600">The highlight is the evening Ganga Aarti, a mesmerizing ceremony of light and sound. Thousands of devotees gather as priests perform rituals with fire and chant, creating an atmosphere of intense spiritual energy.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chitrakoot Section -->
+        <section id="chitrakoot" class="py-20 bg-white">
+            <div class="container mx-auto px-6 reveal">
+                <h2 class="text-4xl font-bold text-center mb-12">Chitrakoot: A Sacred Land</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="card bg-white rounded-2xl shadow-lg p-6">
+                        <img src="https://cdn.dorik.com/6678eaecca55530011b62363/images/images-852bf.jpg" alt="Temples in Chitrakoot" class="w-full h-64 object-cover rounded-xl mb-4">
+                        <h3 class="text-2xl font-bold mb-2">Footsteps of Rama</h3>
+                        <p class="text-gray-600">Chitrakoot is famously associated with the exile of Lord Rama, Sita, and Lakshmana. Sites like Ramghat and the Gupt Godavari caves are steeped in mythological history.</p>
+                    </div>
+                    <div class="card bg-white rounded-2xl shadow-lg p-6">
+                        <img src="https://cdn.dorik.com/6678eaecca55530011b62363/images/WhatsApp-Image-2024-06-24-at-11.02.02-AM-vg9YH.jpeg" alt="Kamadgiri Hill" class="w-full h-64 object-cover rounded-xl mb-4">
+                        <h3 class="text-2xl font-bold mb-2">Kamadgiri Hill</h3>
+                        <p class="text-gray-600">Considered the heart of Chitrakoot, pilgrims perform a 5km parikrama around this sacred hill, which is dotted with temples and believed to fulfill wishes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        </div>
+
+        <!-- Rafting Section -->
+        <section id="rafting" class="py-20">
+            <div class="container mx-auto px-6 reveal">
+                <div class="text-center">
+                    <h2 class="text-4xl font-bold mb-4">Rafting Adventure 2025: More Than Just Rapids</h2>
+                    <p class="text-gray-600 max-w-3xl mx-auto mb-12">Conquer the thrilling rapids of the Ganges in Rishikesh. An unforgettable experience of teamwork, adrenaline, and stunning natural beauty.</p>
+                </div>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 gallery mb-12">
+                    <a href="https://pbs.twimg.com/media/GyaVVWaXQAAWF3Z?format=jpg&name=large" class="card rounded-2xl shadow-lg overflow-hidden block"><img src="https://pbs.twimg.com/media/GyaVVWaXQAAWF3Z?format=jpg&name=large" alt="Rafting team on the river" class="w-full h-full object-cover"></a>
+                    <a href="https://pbs.twimg.com/media/GyaVRddW0AA15et?format=jpg&name=large" class="card rounded-2xl shadow-lg overflow-hidden block"><img src="https://pbs.twimg.com/media/GyaVRddW0AA15et?format=jpg&name=large" alt="Rafting boat in the rapids" class="w-full h-full object-cover"></a>
+                    <a href="https://pbs.twimg.com/media/GyaVL42XMAACyLA?format=jpg&name=large" class="card rounded-2xl shadow-lg overflow-hidden block"><img src="https://pbs.twimg.com/media/GyaVL42XMAACyLA?format=jpg&name=large" alt="Paddling through the water" class="w-full h-full object-cover"></a>
+                    <a href="https://pbs.twimg.com/media/GyaVHNyWgAAE28P?format=jpg&name=large" class="card rounded-2xl shadow-lg overflow-hidden block"><img src="https://pbs.twimg.com/media/GyaVHNyWgAAE28P?format=jpg&name=large" alt="Enjoying the rafting adventure" class="w-full h-full object-cover"></a>
+                </div>
+                <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg card">
+                    <h3 class="text-2xl font-bold mb-4">Lessons from the River</h3>
+                    <p class="text-gray-700 mb-4">Why go rafting? It's a raw, unfiltered encounter with nature's power. It’s about feeling the spray of the Ganges, the pull of the current, and the shared thrill of navigating the unknown. It’s an escape from the digital world and a plunge into an exhilarating reality.</p>
+                    <p class="text-gray-700">From this adventure, I learned the true meaning of teamwork and trust. Every paddle stroke had to be in sync, and we relied on our guide and each other to conquer each rapid. This experience wasn't just about the adrenaline; it was about discovering a new level of personal resilience.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 bg-gray-800 text-white">
+            <div class="container mx-auto px-6 text-center reveal">
+                <h2 class="text-4xl font-bold mb-4">Plan Your Own Journey</h2>
+                <p class="text-gray-300 max-w-2xl mx-auto mb-8">Inspired to explore? Get in touch for tips, stories, or collaborations. Let's share the adventure.</p>
+                <a href="https://asmit4e.github.io/Connect-Me./" target="_blank" rel="noopener noreferrer" class="bg-red-500 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-red-600 transition duration-300 text-lg">
+                    Contact Me
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 text-center py-8">
+        <div class="container mx-auto px-6">
+            <p>&copy; 2025 Thrilling Journeys. All Rights Reserved.</p>
+            <p class="text-sm mt-2">Crafted to inspire your next adventure.</p>
+        </div>
+    </footer>
+
+    <!-- Lightbox Modal for Gallery -->
+    <div id="lightbox" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black opacity-90"></div>
+        <img id="lightbox-img" src="" alt="Enlarged gallery view" class="relative z-10 rounded-lg shadow-2xl">
+        <button id="lightbox-close" class="absolute top-4 right-4 text-white text-3xl">&times;</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mobile menu toggle
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+            mobileMenu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+
+            // Interactive Map Logic
+            document.querySelectorAll('.map-marker').forEach(marker => {
+                marker.addEventListener('click', () => {
+                    const targetId = marker.dataset.target;
+                    document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+
+            // Image Lightbox Logic
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxClose = document.getElementById('lightbox-close');
+            document.querySelectorAll('.gallery a').forEach(link => {
+                link.addEventListener('click', e => {
+                    e.preventDefault();
+                    lightboxImg.src = link.href;
+                    lightbox.classList.remove('hidden');
+                    lightbox.classList.add('flex');
+                });
+            });
+            const closeLightbox = () => {
+                lightbox.classList.add('hidden');
+                lightbox.classList.remove('flex');
+            };
+            lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+            lightboxClose.addEventListener('click', closeLightbox);
+
+            // Scroll Animation Logic
+            const revealElements = document.querySelectorAll('.reveal');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            revealElements.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
